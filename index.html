@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Case Generator - Competitive Programming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .left-panel, .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-item {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #output {
+            width: 100%;
+            min-height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            resize: vertical;
+        }
+
+        .steps-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .steps-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .steps-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .steps-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .info-text {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #0c5460;
+        }
+
+        @media (max-width: 968px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Test Case Generator</h1>
+            <p>Công cụ sinh test case tự động cho lập trình thi đấu</p>
+        </div>
+
+        <div class="content">
+            <div class="left-panel">
+                <div class="section">
+                    <h2>⚙️ Cấu hình Steps</h2>
+                    <div class="info-text">
+                        💡 Mỗi step mô tả một phần của input. Bạn có thể tham chiếu biến từ step trước (ví dụ: dùng "n" làm độ dài mảng).
+                    </div>
+                    <div class="steps-container" id="stepsContainer">
+                        <!-- Steps will be added here dynamically -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="addStep()">➕ Add Step</button>
+                        <button class="btn btn-info" onclick="loadPreset()">📋 Load Preset</button>
+                        <button class="btn btn-secondary" onclick="clearSteps()">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section">
+                    <h2>📄 Output</h2>
+                    <textarea id="output" placeholder="Test case sẽ hiển thị ở đây..."></textarea>
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button class="btn btn-success" onclick="generateTestCase()">🎲 Generate</button>
+                        <button class="btn btn-primary" onclick="downloadTestCase()">💾 Download</button>
+                        <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // UTILITY FUNCTIONS - Các hàm tiện ích
+        // ============================================
+
+        /**
+         * Sinh số nguyên ngẫu nhiên trong khoảng [min, max]
+         */
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        /**
+         * Sinh mảng n số nguyên ngẫu nhiên trong khoảng [min, max]
+         */
+        function randArray(n, min, max) {
+            const arr = [];
+            for (let i = 0; i < n; i++) {
+                arr.push(randInt(min, max));
+            }
+            return arr;
+        }
+
+        /**
+         * Sinh chuỗi ngẫu nhiên với độ dài length từ alphabet cho trước
+         */
+        function randString(length, alphabet = 'abcdefghijklmnopqrstuvwxyz') {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += alphabet[randInt(0, alphabet.length - 1)];
+            }
+            return result;
+        }
+
+        /**
+         * Sinh cặp số (l, r) với ràng buộc l <= r
+         */
+        function randPair(min, max) {
+            const a = randInt(min, max);
+            const b = randInt(min, max);
+            return a <= b ? [a, b] : [b, a];
+        }
+
+        // ============================================
+        // STATE MANAGEMENT - Quản lý trạng thái
+        // ============================================
+
+        let steps = [];
+        let stepCounter = 0;
+
+        /**
+         * Thêm một step mới vào danh sách
+         */
+        function addStep() {
+            const step = {
+                id: stepCounter++,
+                type: 'integer',
+                varName: '',
+                min: 1,
+                max: 100,
+                length: '',
+                count: '',
+                alphabet: 'abcdefghijklmnopqrstuvwxyz',
+                constraint: false,
+                elementType: 'integer', // For array elements: 'integer', 'string', 'pair'
+                elementMin: 1,
+                elementMax: 100,
+                elementAlphabet: 'abcdefghijklmnopqrstuvwxyz',
+                elementLength: '',
+                elementConstraint: false
+            };
+            steps.push(step);
+            renderSteps();
+        }
+
+        /**
+         * Xóa step theo id
+         */
+        function removeStep(id) {
+            steps = steps.filter(step => step.id !== id);
+            renderSteps();
+        }
+
+        /**
+         * Xóa tất cả steps
+         */
+        function clearSteps() {
+            if (confirm('Bạn có chắc muốn xóa tất cả steps?')) {
+                steps = [];
+                stepCounter = 0;
+                renderSteps();
+                document.getElementById('output').value = '';
+            }
+        }
+
+        /**
+         * Cập nhật thông tin của step
+         */
+        function updateStep(id, field, value) {
+            const step = steps.find(s => s.id === id);
+            if (step) {
+                step[field] = value;
+            }
+        }
+
+        // ============================================
+        // UI RENDERING - Hiển thị giao diện
+        // ============================================
+
+        /**
+         * Render lại toàn bộ danh sách steps
+         */
+        function renderSteps() {
+            const container = document.getElementById('stepsContainer');
+            if (steps.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">Chưa có step nào. Nhấn "Add Step" để bắt đầu.</p>';
+                return;
+            }
+
+            container.innerHTML = steps.map((step, index) => `
+                <div class="step-item">
+                    <div class="step-header">
+                        <span class="step-number">Step ${index + 1}</span>
+                        <button class="remove-btn" onclick="removeStep(${step.id})">✕ Remove</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tên biến (để tham chiếu sau này):</label>
+                        <input type="text" value="${step.varName}" 
+                               onchange="updateStep(${step.id}, 'varName', this.value)"
+                               placeholder="Ví dụ: n, q, m">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại dữ liệu:</label>
+                        <select onchange="updateStep(${step.id}, 'type', this.value); renderSteps()">
+                            <option value="integer" ${step.type === 'integer' ? 'selected' : ''}>Integer (Số nguyên)</option>
+                            <option value="array" ${step.type === 'array' ? 'selected' : ''}>Array (Mảng)</option>
+                            <option value="pair" ${step.type === 'pair' ? 'selected' : ''}>Pair (Cặp số)</option>
+                            <option value="string" ${step.type === 'string' ? 'selected' : ''}>String (Chuỗi)</option>
+                        </select>
+                    </div>
+
+                    ${renderStepFields(step)}
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Render các trường input tùy theo loại step
+         */
+        function renderStepFields(step) {
+            switch (step.type) {
+                case 'integer':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min:</label>
+                                <input type="number" value="${step.min}" 
+                                       onchange="updateStep(${step.id}, 'min', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max:</label>
+                                <input type="number" value="${step.max}" 
+                                       onchange="updateStep(${step.id}, 'max', parseInt(this.value))">
+                            </div>
+                        </div>
+                    `;
+
+                case 'array':
+                    return `
+                        <div class="form-group">
+                            <label>Độ dài (số hoặc tên biến, ví dụ: "n"):</label>
+                            <input type="text" value="${step.length}" 
+                                   onchange="updateStep(${step.id}, 'length', this.value)"
+                                   placeholder="Ví dụ: 10 hoặc n">
+                        </div>
+                        <div class="form-group">
+                            <label>Kiểu dữ liệu phần tử:</label>
+                            <select onchange="updateStep(${step.id}, 'elementType', this.value); renderSteps()">
+                                <option value="integer" ${step.elementType === 'integer' ? 'selected' : ''}>Integer (Số nguyên)</option>
+                                <option value="string" ${step.elementType === 'string' ? 'selected' : ''}>String (Chuỗi)</option>
+                                <option value="pair" ${step.elementType === 'pair' ? 'selected' : ''}>Pair (Cặp số)</option>
+                            </select>
+                        </div>
+                        ${renderArrayElementFields(step)}
+                    `;
+
+                case 'pair':
+                    return `
+                        <div class="form-group">
+                            <label>Số lượng cặp (số hoặc tên biến, ví dụ: "q"):</label>
+                            <input type="text" value="${step.count}" 
+                                   onchange="updateStep(${step.id}, 'count', this.value)"
+                                   placeholder="Ví dụ: 5 hoặc q">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min:</label>
+                                <input type="number" value="${step.min}" 
+                                       onchange="updateStep(${step.id}, 'min', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max:</label>
+                                <input type="number" value="${step.max}" 
+                                       onchange="updateStep(${step.id}, 'max', parseInt(this.value))">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" ${step.constraint ? 'checked' : ''} 
+                                       onchange="updateStep(${step.id}, 'constraint', this.checked)">
+                                Ràng buộc l ≤ r
+                            </label>
+                        </div>
+                    `;
+
+                case 'string':
+                    return `
+                        <div class="form-group">
+                            <label>Độ dài chuỗi (số hoặc tên biến, ví dụ: "n"):</label>
+                            <input type="text" value="${step.length}" 
+                                   onchange="updateStep(${step.id}, 'length', this.value)"
+                                   placeholder="Để trống để random trong khoảng min-max">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min độ dài (nếu random):</label>
+                                <input type="number" value="${step.min}" 
+                                       onchange="updateStep(${step.id}, 'min', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max độ dài (nếu random):</label>
+                                <input type="number" value="${step.max}" 
+                                       onchange="updateStep(${step.id}, 'max', parseInt(this.value))">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Alphabet:</label>
+                            <input type="text" value="${step.alphabet}" 
+                                   onchange="updateStep(${step.id}, 'alphabet', this.value)"
+                                   placeholder="abcdefghijklmnopqrstuvwxyz">
+                        </div>
+                    `;
+
+                default:
+                    return '';
+            }
+        }
+
+        /**
+         * Render các trường cấu hình cho phần tử của mảng
+         */
+        function renderArrayElementFields(step) {
+            switch (step.elementType) {
+                case 'integer':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min giá trị phần tử:</label>
+                                <input type="number" value="${step.elementMin}" 
+                                       onchange="updateStep(${step.id}, 'elementMin', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max giá trị phần tử:</label>
+                                <input type="number" value="${step.elementMax}" 
+                                       onchange="updateStep(${step.id}, 'elementMax', parseInt(this.value))">
+                            </div>
+                        </div>
+                    `;
+
+                case 'string':
+                    return `
+                        <div class="form-group">
+                            <label>Độ dài chuỗi phần tử (số hoặc biến):</label>
+                            <input type="text" value="${step.elementLength}" 
+                                   onchange="updateStep(${step.id}, 'elementLength', this.value)"
+                                   placeholder="Để trống để random trong khoảng min-max">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min độ dài (nếu random):</label>
+                                <input type="number" value="${step.elementMin}" 
+                                       onchange="updateStep(${step.id}, 'elementMin', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max độ dài (nếu random):</label>
+                                <input type="number" value="${step.elementMax}" 
+                                       onchange="updateStep(${step.id}, 'elementMax', parseInt(this.value))">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Alphabet:</label>
+                            <input type="text" value="${step.elementAlphabet}" 
+                                   onchange="updateStep(${step.id}, 'elementAlphabet', this.value)"
+                                   placeholder="abcdefghijklmnopqrstuvwxyz">
+                        </div>
+                    `;
+
+                case 'pair':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min giá trị cặp:</label>
+                                <input type="number" value="${step.elementMin}" 
+                                       onchange="updateStep(${step.id}, 'elementMin', parseInt(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Max giá trị cặp:</label>
+                                <input type="number" value="${step.elementMax}" 
+                                       onchange="updateStep(${step.id}, 'elementMax', parseInt(this.value))">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" ${step.elementConstraint ? 'checked' : ''} 
+                                       onchange="updateStep(${step.id}, 'elementConstraint', this.checked)">
+                                Ràng buộc l ≤ r cho mỗi cặp
+                            </label>
+                        </div>
+                    `;
+
+                default:
+                    return '';
+            }
+        }
+
+        // ============================================
+        // TEST CASE GENERATION - Sinh test case
+        // ============================================
+
+        /**
+         * Sinh test case dựa trên cấu hình steps
+         */
+        function generateTestCase() {
+            if (steps.length === 0) {
+                alert('Vui lòng thêm ít nhất một step!');
+                return;
+            }
+
+            const variables = {}; // Lưu trữ các biến đã sinh
+            const output = [];
+
+            try {
+                for (const step of steps) {
+                    const result = generateStepData(step, variables);
+                    output.push(result.output);
+                    
+                    // Lưu biến nếu có tên
+                    if (step.varName) {
+                        variables[step.varName] = result.value;
+                    }
+                }
+
+                document.getElementById('output').value = output.join('\n');
+            } catch (error) {
+                alert('Lỗi khi sinh test case: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        /**
+         * Sinh dữ liệu cho một step cụ thể
+         */
+        function generateStepData(step, variables) {
+            switch (step.type) {
+                case 'integer': {
+                    const value = randInt(step.min, step.max);
+                    return { output: value.toString(), value };
+                }
+
+                case 'array': {
+                    const length = resolveValue(step.length, variables);
+                    const elements = [];
+                    
+                    for (let i = 0; i < length; i++) {
+                        let element;
+                        switch (step.elementType) {
+                            case 'integer':
+                                element = randInt(step.elementMin, step.elementMax);
+                                elements.push(element.toString());
+                                break;
+                            
+                            case 'string':
+                                let strLength;
+                                if (step.elementLength && step.elementLength.toString().trim()) {
+                                    strLength = resolveValue(step.elementLength, variables);
+                                } else {
+                                    strLength = randInt(step.elementMin, step.elementMax);
+                                }
+                                element = randString(strLength, step.elementAlphabet);
+                                elements.push(element);
+                                break;
+                            
+                            case 'pair':
+                                const pair = step.elementConstraint 
+                                    ? randPair(step.elementMin, step.elementMax)
+                                    : [randInt(step.elementMin, step.elementMax), randInt(step.elementMin, step.elementMax)];
+                                elements.push(pair.join(' '));
+                                break;
+                        }
+                    }
+                    
+                    // Format output based on element type
+                    const output = step.elementType === 'pair' || step.elementType === 'string'
+                        ? elements.join('\n')  // Each pair/string on new line
+                        : elements.join(' ');   // Integers on same line
+                    
+                    return { output, value: elements };
+                }
+
+                case 'pair': {
+                    const count = resolveValue(step.count, variables);
+                    const pairs = [];
+                    for (let i = 0; i < count; i++) {
+                        const pair = step.constraint 
+                            ? randPair(step.min, step.max)
+                            : [randInt(step.min, step.max), randInt(step.min, step.max)];
+                        pairs.push(pair.join(' '));
+                    }
+                    return { output: pairs.join('\n'), value: pairs };
+                }
+
+                case 'string': {
+                    let length;
+                    if (step.length && step.length.toString().trim()) {
+                        // If length is specified, resolve it (could be a variable or number)
+                        length = resolveValue(step.length, variables);
+                    } else {
+                        // If no length specified, random between min and max
+                        length = randInt(step.min, step.max);
+                    }
+                    const str = randString(length, step.alphabet);
+                    return { output: str, value: str };
+                }
+
+                default:
+                    throw new Error('Unknown step type: ' + step.type);
+            }
+        }
+
+        /**
+         * Giải quyết giá trị: nếu là số thì trả về số, nếu là tên biến thì lấy từ variables
+         */
+        function resolveValue(value, variables) {
+            if (typeof value === 'number') return value;
+            
+            const trimmed = value.toString().trim();
+            
+            // Nếu là số
+            if (!isNaN(trimmed)) {
+                return parseInt(trimmed);
+            }
+            
+            // Nếu là tên biến
+            if (variables.hasOwnProperty(trimmed)) {
+                return variables[trimmed];
+            }
+            
+            throw new Error(`Không tìm thấy biến "${trimmed}". Hãy đảm bảo biến đã được định nghĩa ở step trước.`);
+        }
+
+        // ============================================
+        // FILE OPERATIONS - Thao tác với file
+        // ============================================
+
+        /**
+         * Tải test case về dưới dạng file .txt
+         */
+        function downloadTestCase() {
+            const output = document.getElementById('output').value;
+            if (!output) {
+                alert('Vui lòng generate test case trước!');
+                return;
+            }
+
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `testcase_${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        /**
+         * Copy test case vào clipboard
+         */
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            if (!output.value) {
+                alert('Không có gì để copy!');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Đã copy vào clipboard!');
+        }
+
+        // ============================================
+        // PRESET - Ví dụ mẫu
+        // ============================================
+
+        /**
+         * Load preset mẫu: n, array, q, q cặp l r
+         */
+        function loadPreset() {
+            if (steps.length > 0 && !confirm('Điều này sẽ xóa các step hiện tại. Tiếp tục?')) {
+                return;
+            }
+
+            steps = [
+                {
+                    id: stepCounter++,
+                    type: 'integer',
+                    varName: 'n',
+                    min: 5,
+                    max: 10,
+                    length: '',
+                    count: '',
+                    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    constraint: false,
+                    elementType: 'integer',
+                    elementMin: 1,
+                    elementMax: 100,
+                    elementAlphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    elementLength: '',
+                    elementConstraint: false
+                },
+                {
+                    id: stepCounter++,
+                    type: 'array',
+                    varName: 'arr',
+                    min: 1,
+                    max: 100,
+                    length: 'n',
+                    count: '',
+                    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    constraint: false,
+                    elementType: 'integer',
+                    elementMin: 1,
+                    elementMax: 100,
+                    elementAlphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    elementLength: '',
+                    elementConstraint: false
+                },
+                {
+                    id: stepCounter++,
+                    type: 'integer',
+                    varName: 'q',
+                    min: 3,
+                    max: 5,
+                    length: '',
+                    count: '',
+                    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    constraint: false,
+                    elementType: 'integer',
+                    elementMin: 1,
+                    elementMax: 100,
+                    elementAlphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    elementLength: '',
+                    elementConstraint: false
+                },
+                {
+                    id: stepCounter++,
+                    type: 'pair',
+                    varName: 'queries',
+                    min: 1,
+                    max: 10,
+                    length: '',
+                    count: 'q',
+                    alphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    constraint: true,
+                    elementType: 'integer',
+                    elementMin: 1,
+                    elementMax: 100,
+                    elementAlphabet: 'abcdefghijklmnopqrstuvwxyz',
+                    elementLength: '',
+                    elementConstraint: false
+                }
+            ];
+
+            renderSteps();
+            alert('Đã load preset thành công! Nhấn Generate để xem kết quả.');
+        }
+
+        // ============================================
+        // INITIALIZATION - Khởi tạo
+        // ============================================
+
+        // Load preset mặc định khi trang được tải
+        window.onload = function() {
+            loadPreset();
+        };
+    </script>
+</body>
+</html>
