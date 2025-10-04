@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Case Generator - Competitive Programming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -297,9 +298,14 @@
                 <div class="section">
                     <h2>📄 Output</h2>
                     <textarea id="output" placeholder="Test case sẽ hiển thị ở đây..."></textarea>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Số lượng test case muốn tạo:</label>
+                        <input type="number" id="testCaseCount" value="1" min="1" max="100" 
+                               style="width: 150px; padding: 8px;">
+                    </div>
                     <div class="button-group" style="margin-top: 15px;">
                         <button class="btn btn-success" onclick="generateTestCase()">🎲 Generate</button>
-                        <button class="btn btn-primary" onclick="downloadTestCase()">💾 Download</button>
+                        <button class="btn btn-primary" onclick="downloadTestCases()">💾 Download (.zip)</button>
                         <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Copy</button>
                     </div>
                 </div>
@@ -774,24 +780,57 @@
         // ============================================
 
         /**
-         * Tải test case về dưới dạng file .txt
+         * Tải nhiều test case về dưới dạng file .zip chứa các file .in
          */
-        function downloadTestCase() {
-            const output = document.getElementById('output').value;
-            if (!output) {
-                alert('Vui lòng generate test case trước!');
+        async function downloadTestCases() {
+            if (steps.length === 0) {
+                alert('Vui lòng thêm ít nhất một step!');
                 return;
             }
 
-            const blob = new Blob([output], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `testcase_${Date.now()}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const count = parseInt(document.getElementById('testCaseCount').value);
+            if (isNaN(count) || count < 1 || count > 100) {
+                alert('Vui lòng nhập số lượng test case hợp lệ (1-100)!');
+                return;
+            }
+
+            const zip = new JSZip();
+
+            try {
+                for (let i = 1; i <= count; i++) {
+                    // Generate a new test case
+                    const variables = {};
+                    const output = [];
+
+                    for (const step of steps) {
+                        const result = generateStepData(step, variables);
+                        output.push(result.output);
+                        
+                        if (step.varName) {
+                            variables[step.varName] = result.value;
+                        }
+                    }
+
+                    const testCaseContent = output.join('\n');
+
+                    zip.file(`test${i}.in`, testCaseContent);
+                }
+
+                const blob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'testcases.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(`Đã tạo và tải xuống ${count} test case trong file testcases.zip!`);
+            } catch (error) {
+                alert(`Lỗi khi sinh test case: ${error.message}`);
+                console.error(error);
+            }
         }
 
         /**
